@@ -1,24 +1,64 @@
 <script lang="ts">
 	import Bar from '../charts/Bar.svelte';
-	import CsvChart from '../charts/CSVChart.svelte';
+	import CsvChart from '../charts/CSVScatter.svelte';
+	import DynamicScatter from '../charts/DynamicScatter.svelte';
+	import OrdinalBar from '../charts/OrdinalBar.svelte';
 	import Scatter from '../charts/Scatter.svelte';
+	import DynamicScaleBar from '../charts/DynamicScaleBar.svelte';
+	import DynamicScaleScatter from '../charts/DynamicScaleScatter.svelte';
 
-	let selected: 'bar' | 'scatter' | 'csv' = 'bar';
+	let selected: string;
+
+	const types = [
+		{
+			type: 'bar',
+			title: 'Bar',
+			component: Bar
+		},
+		{
+			type: 'scatter',
+			title: 'Scatter',
+			component: Scatter
+		},
+		{
+			type: 'csv',
+			title: 'CSV Scatter',
+			component: CsvChart
+		},
+		{
+			type: 'ordinal',
+			title: 'Ordinal Bar',
+			component: OrdinalBar
+		},
+		{
+			type: 'dynamic-scatter',
+			title: 'Dynamic Scatter',
+			component: DynamicScatter
+		},
+		{
+			type: 'dynamic-scale-bar',
+			title: 'Dynamic Scale Bar',
+			component: DynamicScaleBar
+		},
+		{
+			type: 'dynamic-scale-scatter',
+			title: 'Dynamic Scale Scatter',
+			component: DynamicScaleScatter
+		}
+	];
 </script>
 
 <div>
-	<button on:click={() => (selected = 'bar')}>Bar</button>
-	<button on:click={() => (selected = 'scatter')}>Scatter</button>
-	<button on:click={() => (selected = 'csv')}>CSV</button>
+	{#each types as { type, title }}
+		<button on:click={() => (selected = type)}>{title}</button>
+	{/each}
 </div>
 
-{#if selected === 'bar'}
-	<Bar />
-{:else if selected === 'scatter'}
-	<Scatter />
-{:else if selected === 'csv'}
-	<CsvChart />
-{/if}
+{#each types as { type, component }}
+	{#if selected === type}
+		<svelte:component this={component} />
+	{/if}
+{/each}
 
 <style>
 	div {
