@@ -10,7 +10,8 @@
 		select,
 		timeFormat,
 		timeParse,
-		type DSVRowString
+		type DSVRowString,
+		type NumberValue
 	} from 'd3';
 	import { onMount } from 'svelte';
 
@@ -46,7 +47,9 @@
 			.range([height, 0]);
 
 		// Fixme: broken Typescript
-		const xAxis = axisBottom(xScale).ticks(5).tickFormat(axisFormatTime);
+		const xAxis = axisBottom(xScale)
+			.ticks(5)
+			.tickFormat(axisFormatTime as (domainValue: Date | NumberValue, index: number) => string);
 		const yAxis = axisLeft(yScale);
 
 		// define svg as a G element which translates the origin to top-left corner of chart area

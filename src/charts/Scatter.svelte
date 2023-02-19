@@ -77,12 +77,12 @@
 <svg width={w} height={h} />
 
 <style>
-	:global(.axis path),
-	:global(.axis line) {
+	.axis path,
+	.axis line {
 		stroke: teal;
 		shape-rendering: crispEdges;
 	}
-	:global(.axis text) {
+	.axis text {
 		font-family: Optima, Futura, sans-serif;
 		font-weight: bold;
 		font-size: 14px;
