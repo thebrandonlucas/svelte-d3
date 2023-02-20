@@ -6,6 +6,9 @@
 	import Scatter from '../charts/Scatter.svelte';
 	import DynamicScaleBar from '../charts/DynamicScaleBar.svelte';
 	import DynamicScaleScatter from '../charts/DynamicScaleScatter.svelte';
+	import AddRemoveBar from '../charts/AddRemoveBar.svelte';
+	import MouseHoverBar from '../charts/MouseHoverBar.svelte';
+	import SortBars from '../charts/SortBars.svelte';
 
 	let selected: string;
 
@@ -44,6 +47,21 @@
 			type: 'dynamic-scale-scatter',
 			title: 'Dynamic Scale Scatter',
 			component: DynamicScaleScatter
+		},
+		{
+			type: 'add-remove-bar',
+			title: 'Add Remove Bar',
+			component: AddRemoveBar
+		},
+		{
+			type: 'mousehoverbar',
+			title: 'Mouse Hover Bar',
+			component: MouseHoverBar
+		},
+		{
+			type: 'sortbars',
+			title: 'Sort Bars',
+			component: SortBars
 		}
 	];
 </script>

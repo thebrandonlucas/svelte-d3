@@ -1,4 +1,4 @@
-import { randomInt } from 'd3';
+import { max, min, randomInt, scaleLinear } from 'd3';
 
 export function randomNums(n: number, min = 0, max = 100) {
 	return Array.from({ length: n }, () => randomInt(min, max)());
