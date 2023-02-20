@@ -1,16 +1,5 @@
 <script lang="ts">
-	import {
-		ascending,
-		descending,
-		max,
-		min,
-		range,
-		scaleBand,
-		scaleLinear,
-		select,
-		type BaseType,
-		type Selection
-	} from 'd3';
+	import { max, min, range, scaleBand, scaleLinear, select } from 'd3';
 	import { onMount } from 'svelte';
 	import { randomNums } from '../util';
 
@@ -26,7 +15,7 @@
 		.domain([0, max(data) || 0])
 		.range([0, height]);
 
-	let svg: Selection<BaseType, unknown, HTMLElement, any>;
+	let svg;
 	const COLORS_MIN_MAX = [0, 255];
 	const colorScale = scaleLinear()
 		.domain([min(data) || 0, max(data) || 0])
@@ -38,22 +27,40 @@
 			.data(data)
 			.enter()
 			.append('rect')
+
 			.attr('x', (_, i) => x(i) || 0)
 			.attr('y', (d) => height - y(d))
 			.attr('width', x.bandwidth())
 			.attr('height', (d) => y(d))
 			.attr('fill', (d) => `rgb(${colorScale(d)}, 0, 0)`)
 			// can also use regular function() to access "this"
-			.on('mouseover', (event, _) =>
-				select(event.currentTarget).transition('highlight').duration(150).attr('fill', 'orange')
-			)
-			.on('mouseout', (event, d) =>
+			.on('mouseover', (event, d) => {
+				console.log({ event });
+				select(event.currentTarget).transition().duration(150).attr('fill', 'orange');
+
+				const xPosition = parseFloat(select(event?.currentTarget).attr('x')) + x.bandwidth() / 2;
+				const yPosition = parseFloat(select(event.currentTarget).attr('y'));
+				// tooltip
+				select('#tooltip')
+					.style('left', `${xPosition}px`)
+					.style('top', `${yPosition}px`)
+					.select('#value')
+					.text(d);
+
+				// show tip
+				select('#tooltip').classed('hidden', false);
+			})
+			.on('mouseout', (event, d) => {
 				select(event.currentTarget)
-					.transition('dehighlight')
+					.transition()
 					.duration(150)
-					.attr('fill', () => `rgb(${colorScale(d)}, 0, 0)`)
-			)
-			.on('click', () => sortBars());
+					.attr('fill', () => `rgb(${colorScale(d)}, 0, 0)`);
+
+				// hide tooltip
+				select('#tooltip').classed('hidden', true);
+			})
+			.append('title')
+			.text((d) => d);
 
 		svg
 			.selectAll('text')
@@ -69,36 +76,27 @@
 			.attr('font-size', '11px')
 			.style('pointer-events', 'none');
 	});
-
-	let sortAscending = true;
-	function sortBars() {
-		svg
-			.selectAll('rect')
-			.sort((a, b) => {
-				const n1 = a as number,
-					n2 = b as number;
-				return sortAscending ? ascending(n1, n2) : descending(n1, n2);
-			})
-			.transition('sortBars')
-			.duration(1000)
-			.delay((_, i) => i * 50)
-			.attr('x', (_, i) => x(i) || 0);
-
-		// sort text
-		svg
-			.selectAll('text')
-			.sort((a, b) => {
-				const s1 = a as string,
-					s2 = b as string;
-				return sortAscending ? ascending(s1, s2) : descending(s1, s2);
-			})
-			.transition('sortText')
-			.duration(1000)
-			.delay((_, i) => i * 50)
-			.attr('x', (_, i) => (x(i) || 0) + x.bandwidth() / 2);
-		sortAscending = !sortAscending;
-	}
 </script>
 
 <svg {width} {height} />
-<p>Click a bar to sort it ascending or descending!</p>
+
+<div id="tooltip" class="hidden">
+	<p><strong>Header here</strong></p>
+	<p><span id="value">100</span>%</p>
+</div>
+
+<style>
+	#tooltip {
+		position: absolute;
+		width: 200px;
+		height: auto;
+		padding: 10px;
+		background-color: white;
+		border: 1px solid black;
+		pointer-events: none;
+	}
+
+	#tooltip.hidden {
+		display: none;
+	}
+</style>

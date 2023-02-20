@@ -9,6 +9,7 @@
 	import AddRemoveBar from '../charts/AddRemoveBar.svelte';
 	import MouseHoverBar from '../charts/MouseHoverBar.svelte';
 	import SortBars from '../charts/SortBars.svelte';
+	import TooltipBar from '../charts/TooltipBar.svelte';
 
 	let selected: string;
 
@@ -62,6 +63,11 @@
 			type: 'sortbars',
 			title: 'Sort Bars',
 			component: SortBars
+		},
+		{
+			type: 'tooltipbar',
+			title: 'Tooltip Bar',
+			component: TooltipBar
 		}
 	];
 </script>
