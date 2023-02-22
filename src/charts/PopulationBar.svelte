@@ -91,7 +91,6 @@
 			.attr('height', y.bandwidth())
 			.attr('width', ({ population }) => x(population))
 			.attr('opacity', ({ population }) => opacity(population));
-		select('.y.axis').call(yAxis);
 	}
 
 	function remove() {
