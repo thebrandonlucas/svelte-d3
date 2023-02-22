@@ -13,6 +13,7 @@
 	import StackBar from '../../charts/StackBar.svelte';
 	import StackedArea from '../../charts/StackedArea.svelte';
 	import Area from '../../charts/Area.svelte';
+	import ForceGraph from '../../charts/ForceGraph.svelte';
 
 	let selected: string;
 
@@ -86,6 +87,11 @@
 			type: 'stackedarea',
 			title: 'Stacked Area',
 			component: StackedArea
+		},
+		{
+			type: 'forcegraph',
+			title: 'Force Graph',
+			component: ForceGraph
 		}
 	];
 </script>

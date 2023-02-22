@@ -39,7 +39,7 @@
 
 		const x = scaleTime()
 			// FIXME: how to type?
-			.domain(extent(data, (d) => d.date))
+			.domain(extent(data, (d) => d.date) as [Date, Date])
 			.range([0, innerWidth]);
 		const y = scaleLinear()
 			.domain([0, max(data, (d) => d.value) || 0])
