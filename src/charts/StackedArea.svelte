@@ -2,13 +2,18 @@
 	import {
 		area,
 		axisBottom,
-		axisRight,
+		axisLeft,
+		color,
 		csv,
+		extent,
+		group,
 		max,
-		min,
 		scaleLinear,
+		scaleOrdinal,
 		scaleTime,
-		schemeCategory10,
+		schemeSet2,
+		schemeSet3,
+		schemeSpectral,
 		select,
 		stack,
 		stackOrderDescending,
@@ -23,76 +28,50 @@
 		innerHeight = height - margin.top - margin.bottom,
 		innerWidth = width - margin.left - margin.right;
 
-	const parseTime = timeParse('%Y-%m');
-
-	// stacked chart takes data of following type:
-	// Array with { date: Date(), metric1, metric2, ... metricN }
-	function rowConvert(csvRow: any) {
-		// TODO: TS
-		let row: any = {};
-		Object.keys(csvRow).forEach((key) => {
-			row[key] = key === 'Date' ? parseTime(csvRow.Date) : parseInt(csvRow[key]) || 0;
-		});
-		return row;
-	}
-
-	const stk = stack().order(stackOrderDescending);
-
 	onMount(async () => {
-		const data = await csv('ev_sales_data.csv', rowConvert);
+		const data = await csv(
+			'https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/5_OneCatSevNumOrdered_wide.csv'
+		);
+
+		const keys = data.columns.slice(1);
+
+		const stackedData = stack().keys(keys)(data);
+
+		const x = scaleTime()
+			.domain(extent(data, (d: any) => d.year))
+			.range([0, innerWidth]);
+		// TODO: use extent with accessor to get max
+		const y = scaleLinear().domain([0, 200_000]).range([innerHeight, 0]);
 
 		const chart = select('svg')
 			.append('g')
-			.attr('transform', `translate(${margin.top},${margin.right})`);
+			.attr('transform', `translate(${margin.left},${margin.top})`);
+		// axes
+		chart
+			.append('g')
+			.attr('class', 'x axis')
+			.attr('transform', `translate(0, ${innerHeight})`)
+			.call(axisBottom(x));
+		chart.append('g').attr('class', 'y axis').call(axisLeft(y));
 
-		// remove the "date" key so that we don't include it in stacking
-		const keys = Object.keys(data[0]);
-		keys.shift();
-		// set the stack's keys
-		stk.keys(keys);
-		// stack the data
-		const series = stk(data);
-
-		// set scales & axes
-		const x = scaleTime()
-			.domain([min(data, ({ Date }) => Date), max(data, ({ Date }) => Date)])
-			.range([0, innerWidth]);
-		const y = scaleLinear()
-			.domain([
-				0,
-				max(data, (d) => {
-					let sum = 0;
-					Object.keys(d).forEach((key) => {
-						if (key !== 'Date') {
-							sum += d[key];
-						}
-					});
-					return sum;
-				}) || 0
-			])
-			.range([innerHeight, 0]);
-
-		const xAxis = axisBottom(x);
-		const yAxis = axisRight(y);
-
-		// create area generator
-		const ar = area()
-			.x((d) => x(d.Date))
-			.y0(() => y(d[0]))
+		// area generator
+		const areaGen = area()
+			.x((d) => x(d.data.year))
+			.y0((d) => y(d[0]))
 			.y1((d) => y(d[1]));
 
-		// area paths
+		// color scale
+		const color = scaleOrdinal().domain(keys).range(schemeSet3);
+		// show areas
 		chart
 			.selectAll('path')
-			.data(series)
+			.data(stackedData)
 			.join('path')
-			.attr('d', ar)
-			.attr('fill', (_, i) => schemeCategory10[i])
-			.append('title')
-			.text((d) => d.key);
-	});
+			.style('fill', (d) => color(d.key))
+			.attr('d', areaGen);
 
-	const x = scaleTime();
+		console.log({ data, stackedData, keys });
+	});
 </script>
 
 <svg {width} {height} />
