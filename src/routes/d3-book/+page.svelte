@@ -14,6 +14,7 @@
 	import StackedArea from '../../charts/StackedArea.svelte';
 	import Area from '../../charts/Area.svelte';
 	import ForceGraph from '../../charts/ForceGraph.svelte';
+	import Pie from '../../charts/Pie.svelte';
 
 	let selected: string;
 
@@ -92,6 +93,11 @@
 			type: 'forcegraph',
 			title: 'Force Graph',
 			component: ForceGraph
+		},
+		{
+			type: 'pie',
+			title: 'Pie',
+			component: Pie
 		}
 	];
 </script>
